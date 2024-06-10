@@ -61,19 +61,15 @@ data "aws_ami" "ubuntu" {
 }
 
 
+#   Private instance with outbound internet access
+
 resource "aws_instance" "example_web_server" {
   ami           = data.aws_ami.ubuntu.id
   availability_zone = "eu-west-1a"
   instance_type = "t2.micro"
 #   subnet_id =  element(module.vpc.private_subnets, 1)
   subnet_id =  aws_subnet.my_subnet.id
-  vpc_security_group_ids      = [module.security_group.security_group_id]
-
-#   iam_role_description=""
-#   create_iam_instance_profile=""
-#   iam_role_policies=""
-
-  
+  vpc_security_group_ids      = [module.security_group.security_group_id]  
   tags = {
     Name = "ExampleInstance"
   }
@@ -84,48 +80,11 @@ Good example reference: https://github.com/terraform-aws-modules/terraform-aws-e
 
 */
 
-################################################################################
-# EC2 Module - multiple instances with `for_each`
-################################################################################
 
-# locals {
-#   multiple_instances = {
-#     one = {
-#       instance_type     = "t3.micro"
-#     #   availability_zone = element(module.vpc.azs, 0)
-#     #   subnet_id         = element(module.vpc.private_subnets, 0)
-#       availability_zone = module.vpc.azs[0]
-#       subnet_id         = module.vpc.private_subnets[1]
-#       root_block_device = [
-#         {
-#           encrypted   = true
-#           volume_type = "gp3"
-#           throughput  = 200
-#           volume_size = 50
-#           tags = {
-#             Name = "my-root-block"
-#           }
-#         }
-#       ]
-#     }
-#     two = {
-#       instance_type     = "t3.small"
-#       availability_zone = module.vpc.azs[1]
-#       subnet_id         = module.vpc.private_subnets[1]
-#     #   availability_zone = module.vpc.azs[1]
-#     #   subnet_id         = module.vpc.private_subnets[1]
-#       root_block_device = [
-#         {
-#           encrypted   = true
-#           volume_type = "gp2"
-#           volume_size = 50
-#         }
-#       ]
-#     }
-#     three = {
-#       instance_type     = "t3.medium"
-#       availability_zone = module.vpc.azs[2]
-#       subnet_id         = module.vpc.private_subnets[2]
-#     }
-#   }
-# }
+#   Public instance from personal IP
+
+output "vpc_private_subnet" {
+  value =  aws_subnet.my_subnet.id
+}
+
+
