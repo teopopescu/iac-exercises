@@ -1,6 +1,6 @@
 # ########################## General ##########################
 region           = "us-west-2"
-vpc_id           = "vpc-08862080241664926"
+vpc_id           = ""
 vpc_name         = "test-vpc"
 availability_zones = ["us-west-2a", "us-west-2b", "us-west-2c"]
 # environment      = "test"
