@@ -33,12 +33,16 @@ locals {
   tags = local.tags
 }
 
+data "aws_availability_zones" "available" {}
+
 resource "aws_subnet" "my_subnet" {
-  vpc_id            = module.vpc.vpc_id
-  cidr_block        = module.vpc.vpc_cidr_block
-  availability_zone = "eu-west-1a"
+  count = 3
+  vpc_id     = module.vpc.vpc_id
+  availability_zone = element(data.aws_availability_zones.available.names, count.index)
+ 
+  cidr_block = "10.0.${count.index}.0/24" # Modified to match the new VPC CIDR block
   tags = {
-    Name = "tf-example"
+    Name = "tf-subnet-list-example"
   }
 }
 
@@ -68,7 +72,7 @@ resource "aws_instance" "example_web_server" {
   availability_zone = "eu-west-1a"
   instance_type = "t2.micro"
 #   subnet_id =  element(module.vpc.private_subnets, 1)
-  subnet_id =  aws_subnet.my_subnet.id
+  subnet_id =  aws_subnet.my_subnet[0].id
   vpc_security_group_ids      = [module.security_group.security_group_id]  
   tags = {
     Name = "ExampleInstance"
@@ -84,7 +88,5 @@ Good example reference: https://github.com/terraform-aws-modules/terraform-aws-e
 #   Public instance from personal IP
 
 output "vpc_private_subnet" {
-  value =  aws_subnet.my_subnet.id
+  value =  aws_subnet.my_subnet[0].id
 }
-
-

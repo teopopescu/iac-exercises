@@ -42,7 +42,7 @@ resource "aws_route_table" "prod-route-table" {
 
 # 5. Associate subnet with Route Table
 resource "aws_route_table_association" "a" {
-  subnet_id      = aws_subnet.my_subnet.id
+  subnet_id      = aws_subnet.my_subnet[1].id
   route_table_id = aws_route_table.prod-route-table.id
 }
 
@@ -90,7 +90,7 @@ resource "aws_security_group" "allow_web" {
 # 7. Create a network interface with an ip in the subnet that was created in step 4
 
 resource "aws_network_interface" "web-server-nic" {
-  subnet_id       = aws_subnet.my_subnet.id
+  subnet_id       = aws_subnet.my_subnet[1].id
   private_ips     = ["10.0.1.50"]
   security_groups = [aws_security_group.allow_web.id]
 
@@ -113,7 +113,7 @@ output "server_public_ip" {
 resource "aws_instance" "web-server-instance" {
   ami               =  data.aws_ami.ubuntu.id
   instance_type     = "t2.micro"
-  availability_zone = "eu-west-1a"
+  availability_zone = "eu-west-1b"
   key_name          = "main-key"
 
   network_interface {
